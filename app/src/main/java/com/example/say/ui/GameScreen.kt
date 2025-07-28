@@ -1,5 +1,6 @@
 package com.example.say.ui
 
+import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,11 +24,11 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.say.R
 import com.example.say.data.ScoreRepository
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.say.ui.theme.SayıTheme
@@ -41,33 +42,41 @@ fun GameScreen(username: String, difficulty: Difficulty, onNavigateHome: () -> U
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding).padding(16.dp)) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = "Skor: ${gameState.score}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(text = "Süre: ${gameState.timeLeft}s", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(if (difficulty == Difficulty.Kolay) 4 else 4),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(gameState.cards) { card ->
-                CardView(card = card, onClick = { viewModel.onCardClicked(card) })
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(
+                    text = "${stringResource(id = R.string.score_label)}: ${gameState.score}", 
+                    fontSize = 20.sp, 
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "${stringResource(id = R.string.time_label)}: ${gameState.timeLeft}s", 
+                    fontSize = 20.sp, 
+                    fontWeight = FontWeight.Bold
+                )
             }
-        }
-
-        if (gameState.gameResult != GameResult.IN_PROGRESS) {
-            GameOverDialog(
-                gameResult = gameState.gameResult,
-                score = gameState.score,
-                onPlayAgain = { viewModel.startGame() },
-                onNavigateHome = onNavigateHome,
-                onSaveScore = {
-                    viewModel.saveScore()
-                    onNavigateHome()
+            Spacer(modifier = Modifier.height(16.dp))
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(if (difficulty == Difficulty.Kolay) 4 else 4),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(gameState.cards) { card ->
+                    CardView(card = card, onClick = { viewModel.onCardClicked(card) })
                 }
-            )
-        }
+            }
+
+            if (gameState.gameResult != GameResult.IN_PROGRESS) {
+                GameOverDialog(
+                    gameResult = gameState.gameResult,
+                    score = gameState.score,
+                    onPlayAgain = { viewModel.startGame() },
+                    onNavigateHome = onNavigateHome,
+                    onSaveScore = {
+                        viewModel.saveScore()
+                        onNavigateHome()
+                    }
+                )
+            }
         } // Column
     } // Scaffold
 }
@@ -81,30 +90,30 @@ fun GameOverDialog(
     onNavigateHome: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = onNavigateHome, // Arka plana tıklayınca anasayfaya döner
-        title = {
+        onDismissRequest = { },
+        title = { 
             Text(
-                text = if (gameResult == GameResult.WON) "Tebrikler, Kazandınız!" else "Süre Doldu, Kaybettiniz!",
+                text = stringResource(id = R.string.game_over_title), 
                 fontWeight = FontWeight.Bold
-            )
+            ) 
         },
-        text = { Text(text = "Skorunuz: $score") },
+        text = { 
+            Text(
+                text = when (gameResult) {
+                    GameResult.WON -> stringResource(id = R.string.you_won)
+                    GameResult.LOST_TIME -> stringResource(id = R.string.you_lost)
+                    GameResult.IN_PROGRESS -> ""
+                }
+            ) 
+        },
         confirmButton = {
-            Column(horizontalAlignment = Alignment.End) {
-                Button(onClick = onPlayAgain) {
-                    Text("Tekrar Oyna")
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                if (gameResult == GameResult.WON) {
-                    Button(onClick = onSaveScore) {
-                        Text("Skoru Kaydet ve Çık")
-                    }
-                }
+            Button(onClick = onPlayAgain) {
+                Text(stringResource(id = R.string.play_again_button))
             }
         },
         dismissButton = {
             Button(onClick = onNavigateHome) {
-                Text("Çıkış")
+                Text(stringResource(id = R.string.back_to_home_button))
             }
         }
     )
@@ -112,43 +121,46 @@ fun GameOverDialog(
 
 @Composable
 fun CardView(card: CardData, onClick: () -> Unit) {
-    val rotation by animateFloatAsState(targetValue = if (card.isFlipped) 180f else 0f, label = "")
+    val rotation by animateFloatAsState(
+        targetValue = if (card.isFlipped) 180f else 0f,
+        label = "card_rotation"
+    )
 
     Card(
         modifier = Modifier
             .aspectRatio(1f)
-            .graphicsLayer {
-                rotationY = rotation
-                cameraDistance = 8 * density
-            }
-            .clickable(enabled = !card.isMatched && !card.isFlipped) { onClick() },
-        colors = CardDefaults.cardColors(containerColor = if (card.isMatched) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.primary)
+            .clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            if (rotation > 90f) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    rotationY = rotation
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            if (card.isFlipped || card.isMatched) {
                 Text(
                     text = card.value.toString(),
-                    fontSize = 32.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.graphicsLayer { rotationY = 180f } // Text is also rotated
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            } else {
+                Text(
+                    text = "?",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
     }
 }
 
-@Preview(name = "Game Screen Light", showBackground = true)
+@Preview(showBackground = true)
 @Composable
-fun GameScreenPreviewLight() {
+fun GameScreenPreview() {
     SayıTheme(darkTheme = false) {
-        GameScreen(username = "Tester", difficulty = Difficulty.Kolay, onNavigateHome = {})
-    }
-}
-
-@Preview(name = "Game Screen Dark", showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun GameScreenPreviewDark() {
-    SayıTheme(darkTheme = true) {
-        GameScreen(username = "Tester", difficulty = Difficulty.Kolay, onNavigateHome = {})
+        GameScreen(username = "Test", difficulty = Difficulty.Kolay, onNavigateHome = {})
     }
 }

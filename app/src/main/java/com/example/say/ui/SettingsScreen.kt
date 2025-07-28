@@ -8,41 +8,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.res.stringResource
+import com.example.say.R
+import com.example.say.data.Language
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.say.MainViewModel
-import com.example.say.MainViewModelFactory
+
 import com.example.say.data.Theme
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.say.ui.theme.SayıTheme
 
 @Composable
-fun SettingsScreen(mainViewModel: MainViewModel = viewModel(factory = MainViewModelFactory(LocalContext.current.applicationContext as android.app.Application))) {
+fun SettingsScreen(mainViewModel: MainViewModel = hiltViewModel()) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
-    val currentTheme by mainViewModel.theme.collectAsState()
+        val currentTheme by mainViewModel.theme.collectAsState()
+    val currentLanguage by mainViewModel.language.collectAsState()
 
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("Skorları Sil", fontWeight = FontWeight.Bold) },
-            text = { Text("Tüm skorları silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.") },
+                        title = { Text(stringResource(id = R.string.delete_scores_dialog_title), fontWeight = FontWeight.Bold) },
+                        text = { Text(stringResource(id = R.string.delete_scores_dialog_text)) },
             confirmButton = {
                 Button(
                     onClick = { 
                         mainViewModel.deleteAllScores()
-                        Toast.makeText(context, "Tüm skorlar silindi.", Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(context, context.getString(R.string.all_scores_deleted_toast), Toast.LENGTH_SHORT).show()
                         showDialog = false 
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("Sil")
+                                        Text(stringResource(id = R.string.delete_button))
                 }
             },
             dismissButton = {
                 Button(onClick = { showDialog = false }) {
-                    Text("Hayır")
+                                        Text(stringResource(id = R.string.no_button))
                 }
             }
         )
@@ -57,24 +61,24 @@ fun SettingsScreen(mainViewModel: MainViewModel = viewModel(factory = MainViewMo
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-        Text("Ayarlar", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(id = R.string.settings_button), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(24.dp))
 
         // Clear Scores Section
-        Text("Veri Yönetimi", style = MaterialTheme.typography.titleLarge)
+                Text(stringResource(id = R.string.data_management_title), style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = { showDialog = true },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer)
         ) {
-            Text("Tüm Skorları Sil", color = MaterialTheme.colorScheme.onErrorContainer)
+                        Text(stringResource(id = R.string.delete_all_scores), color = MaterialTheme.colorScheme.onErrorContainer)
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
         // Theme Selection Section
-        Text("Tema", style = MaterialTheme.typography.titleLarge)
+                Text(stringResource(id = R.string.theme_title), style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(8.dp))
 
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -93,15 +97,57 @@ fun SettingsScreen(mainViewModel: MainViewModel = viewModel(factory = MainViewMo
                     Spacer(Modifier.width(16.dp))
                     Text(
                         text = when (theme) {
-                            Theme.LIGHT -> "Açık"
-                            Theme.DARK -> "Koyu"
-                            Theme.SYSTEM -> "Sistem Varsayılanı"
+                            Theme.LIGHT -> stringResource(id = R.string.theme_light)
+                            Theme.DARK -> stringResource(id = R.string.theme_dark)
+                            Theme.SYSTEM -> stringResource(id = R.string.theme_system)
                         },
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
-        } // Theme selection column
+                } // Theme selection column
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Language Selection Section
+        Text(stringResource(id = R.string.language_title), style = MaterialTheme.typography.titleLarge)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Language.values().forEach { language ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            mainViewModel.setLanguage(language)
+                            // Apply locale immediately so Settings screen updates without leaving
+                            val locale = java.util.Locale(language.code)
+                            val localeList = androidx.core.os.LocaleListCompat.forLanguageTags(locale.toLanguageTag())
+                            androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(localeList)
+                        }
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (currentLanguage == language),
+                        onClick = {
+                            mainViewModel.setLanguage(language)
+                            val locale = java.util.Locale(language.code)
+                            val localeList = androidx.core.os.LocaleListCompat.forLanguageTags(locale.toLanguageTag())
+                            androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(localeList)
+                        }
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = when (language) {
+                            Language.TURKISH -> stringResource(id = R.string.language_turkish)
+                            Language.ENGLISH -> stringResource(id = R.string.language_english)
+                        },
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+        } // Language selection column
 
 
         } // Main Column

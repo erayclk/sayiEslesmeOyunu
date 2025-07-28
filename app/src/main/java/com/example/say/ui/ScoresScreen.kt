@@ -9,9 +9,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.say.R
 import com.example.say.data.Score
 import com.example.say.data.ScoreRepository
 import com.example.say.ui.theme.SayıTheme
@@ -32,7 +34,7 @@ fun ScoresScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Yüksek Skorlar",
+                text = stringResource(id = R.string.scores_title),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -41,7 +43,10 @@ fun ScoresScreen() {
 
             if (scores.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Henüz kaydedilmiş bir skor yok.", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        text = stringResource(id = R.string.no_scores_message), 
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             } else {
                 LazyColumn(
@@ -86,7 +91,7 @@ fun ScoreCard(rank: Int, username: String, score: Int) {
                 )
             }
             Text(
-                text = "$score Puan",
+                text = "$score ${stringResource(id = R.string.points_label)}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -94,18 +99,10 @@ fun ScoreCard(rank: Int, username: String, score: Int) {
     }
 }
 
-@Preview(name = "Scores Screen Light", showBackground = true)
+@Preview(showBackground = true)
 @Composable
-fun ScoresScreenPreviewLight() {
+fun ScoresScreenPreview() {
     SayıTheme(darkTheme = false) {
-        ScoresScreen()
-    }
-}
-
-@Preview(name = "Scores Screen Dark", showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun ScoresScreenPreviewDark() {
-    SayıTheme(darkTheme = true) {
         ScoresScreen()
     }
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChatHistoryState">
+    <option name="serializedSessions">
+      <map>
+        <entry key="8daa04af-0983-463b-bf54-c05c83e3adbd" value="{&quot;id&quot;:&quot;8daa04af-0983-463b-bf54-c05c83e3adbd&quot;,&quot;name&quot;:&quot;Türkçe ayarını düzeltebilir misin?&quot;,&quot;timestamp&quot;:1753723281125,&quot;messages&quot;:[{&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;\u003cuser_query\u003e\nayarlardan türkçe dili seçili iken hiç bir türkçe  olmuyor bunu düzeltir misin\n\u003c/user_query\u003e&quot;}]},{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;There was an unknown error. Here is my cutoff response:\n&quot;}]}" />
+      </map>
+    </option>
+  </component>
+</project>
