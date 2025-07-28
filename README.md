@@ -4,38 +4,31 @@ Bu proje, Android için geliştirilmiş bir sayı tahmin oyunudur. Kullanıcıla
 
 ## Ekranlar ve Açıklamalar
 
-### Ana Sayfa
-![Ana Sayfa](ss/main_page.png)
-Uygulamayı başlattığınızda ana sayfa ile karşılaşırsınız. Buradan oyuna başlayabilir veya ayarlara erişebilirsiniz.
+<div style="display: flex; gap: 10px;">
+  <div>
+    <strong>Ana Sayfa</strong><br>
+    <img src="ss/main_page.png" width="200">
+  </div>
+  <div>
+    <strong>Oyun Kurulumu</strong><br>
+    <img src="ss/gameSetup_page.png" width="200">
+  </div>
+  <div>
+    <strong>Oyun Ekranı</strong><br>
+    <img src="ss/game_screen.png" width="200">
+  </div>
+</div>
 
-### Oyun Kurulumu
-![Oyun Kurulumu](ss/gameSetup_page.png)
-Oyun başlamadan önce kullanıcıdan bazı ayarlar veya bilgiler alınır. Bu ekranda oyunun zorluk seviyesi gibi seçenekler yer alır.
+<br>
 
-### Oyun Ekranı
-![Oyun Ekranı](ss/game_screen.png)
-Tahminlerinizi girdiğiniz ve oyunun aktif olarak oynandığı ekrandır. Burada mevcut tahminleriniz ve kalan haklarınızı görebilirsiniz.
+<div style="display: flex; gap: 10px;">
+  <div>
+    <strong>Skor Ekranı</strong><br>
+    <img src="ss/scor_screen.png" width="200">
+  </div>
+  <div>
+    <strong>Ayarlar Ekranı</strong><br>
+    <img src="ss/settings_screen.png" width="200">
+  </div>
+</div>
 
-### Skor Ekranı
-![Skor Ekranı](ss/scor_screen.png)
-Oyun sonunda ulaştığınız skorları bu ekranda görebilirsiniz. Başarılarınızı takip edebilirsiniz.
-
-### Ayarlar Ekranı
-![Ayarlar Ekranı](ss/settings_screen.png)
-Uygulamanın tema, dil ve diğer ayarlarını bu ekrandan değiştirebilirsiniz.
-
-## Kurulum
-
-1. Projeyi klonlayın:
-   ```sh
-   git clone <repo-url>
-   ```
-2. Android Studio ile açın.
-3. Gerekli bağımlılıkları yükleyin.
-4. Uygulamayı bir emülatörde veya cihazda çalıştırın.
-
-## Katkıda Bulunma
-Katkılarınızı bekliyoruz! Lütfen önce bir issue açarak değişiklik önerinizi belirtin.
-
-## Lisans
-Bu proje MIT lisansı ile lisanslanmıştır.
